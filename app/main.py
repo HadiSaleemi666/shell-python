@@ -1,4 +1,5 @@
 import sys
+import os
 
 
 def main():
@@ -24,6 +25,21 @@ if __name__ == "__main__":
             if (command[index:] in builtinCommands):
                 print(f"{command[index:]} is a shell builtin")
             else:
-                print(f"{command[index:]}: not found")
+                system_path = os.environ.get('PATH')
+                commandIndex = command.find(" ")
+                commandIndex = commandIndex + 1
+                ogcommand = command[commandIndex:] 
+                command = command[commandIndex:] + ".exe"
+                directories = system_path.split(":")
+                found = False
+                for directory in directories:
+                    if os.path.exists(directory):
+                        print(os.listdir(directory))
+                    if os.path.exists(directory) and command in os.listdir(directory):
+                        found = True
+                        print(f"{ogcommand} is {directory}")
+                        break
+                if (not found):
+                    print(f"{ogcommand}: not found")
         else:
             print(f"{command}: command not found")
