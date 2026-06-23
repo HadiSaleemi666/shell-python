@@ -31,7 +31,7 @@ if __name__ == "__main__":
                 directories = system_path.split(os.pathsep)
                 found = False
                 for directory in directories: 
-                    if os.path.exists(directory) and command in os.listdir(directory):
+                    if os.path.exists(directory) and command in os.listdir(directory) and os.access(f"{directory}{os.path.sep}{command}", os.X_OK):
                         found = True
                         print(f"{command} is {directory}{os.path.sep}{command}")
                         break
