@@ -24,6 +24,6 @@ if __name__ == "__main__":
             if (command[index:] in builtinCommands):
                 print(f"{command[index:]} is a shell builtin")
             else:
-                print(f"{command[index:]} is not a shell builtin")
+                print(f"{command[index:]}: command not found")
         else:
             print(f"{command}: command not found")
