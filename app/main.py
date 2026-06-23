@@ -29,7 +29,6 @@ if __name__ == "__main__":
                 system_path = os.environ.get('PATH')
                 command = command[index:] 
                 directories = system_path.split(os.pathsep)
-                print(directories)
                 found = False
                 for directory in directories: 
                     if os.path.exists(directory) and command in os.listdir(directory):
