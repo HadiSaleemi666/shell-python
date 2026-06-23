@@ -17,7 +17,7 @@ if __name__ == "__main__":
         builtinCommands = ["echo", "type", "exit"]
         main()
         command = input()
-        index = getFirstWordEndIndex()
+        index = getFirstWordEndIndex(command)
         if (command == "exit"):
             break
         elif ("echo" in command[:index]):
