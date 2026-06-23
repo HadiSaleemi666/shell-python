@@ -11,4 +11,6 @@ if __name__ == "__main__":
     while (True):
         main()
         command = input()
+        if (command == "exit"):
+            break
         print(f"{command}: command not found")
