@@ -13,4 +13,7 @@ if __name__ == "__main__":
         command = input()
         if (command == "exit"):
             break
-        print(f"{command}: command not found")
+        elif ("echo" in command):
+            print(command[len("echo") + 1:])
+        else:
+            print(f"{command}: command not found")
