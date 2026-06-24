@@ -32,7 +32,11 @@ def main():
             break
         elif ("echo" in command[:index]):
             if (index != 0):
-                print(command[index:])
+                command = command[index:]
+                if ("'" not in command):
+                    command = command.split()
+                    command = " ".join(command)
+                print(command)
             else:
                 print("")
         elif ("type" in command[:index]):
@@ -54,7 +58,7 @@ def main():
             if (os.path.exists(path)):
                 os.chdir(path)
             else:
-                print(f"{command[:index - 1]}: {path}: No such file or directory")
+                print(f"{command[:index]}: {path}: No such file or directory")
         else:
             index = index - 1
             found, path = getExecutablePath(command[:index])
