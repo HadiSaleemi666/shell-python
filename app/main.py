@@ -36,6 +36,9 @@ def main():
                 if ("'" not in command):
                     command = command.split()
                     command = " ".join(command)
+                else:
+                    command = command.split("'")
+                    command = "".join(command)
                 print(command)
             else:
                 print("")
