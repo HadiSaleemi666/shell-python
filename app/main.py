@@ -13,7 +13,7 @@ def getExecutablePath(command):
     found = False
     path = ""
     for directory in directories: 
-        if os.path.exists(directory) and (command + ".exe") in os.listdir(directory) and os.access(f"{directory}{os.path.sep}{command}.exe", os.X_OK):
+        if os.path.exists(directory) and command in os.listdir(directory) and os.access(f"{directory}{os.path.sep}{command}", os.X_OK):
             found = True
             path = directory + os.path.sep + command
             return found, path
@@ -47,7 +47,9 @@ def main():
                     print(f"{command}: not found")
 
         else:
+            index = index - 1
             found, path = getExecutablePath(command[:index])
+            print(command[:index])
             if (found):
                 subprocess.run(command, shell=True)
             else:
