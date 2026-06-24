@@ -45,7 +45,8 @@ def main():
                     print(f"{command} is {path}")
                 else:
                     print(f"{command}: not found")
-
+        elif (command == "pwd"):
+            print(os.getcwd())
         else:
             index = index - 1
             found, path = getExecutablePath(command[:index])
