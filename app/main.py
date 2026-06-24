@@ -49,6 +49,8 @@ def main():
             print(os.getcwd())
         elif ("cd" in command[:index]):
             path = command[index:]
+            if (path == "~"):
+                path = os.environ.get('HOME')
             if (os.path.exists(path)):
                 os.chdir(path)
             else:
