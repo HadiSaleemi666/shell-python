@@ -2,10 +2,12 @@ import sys
 import os
 import subprocess
 
-def getFirstWordEndIndex(command):
+def getCommandAndArguementIndexes(command):
         index = command.find(" ")
         index = index + 1
-        return index
+        if (index == 0):
+            return len(command), -1
+        return index - 1, index
 
 def getExecutablePath(command):
     system_path = os.environ.get('PATH')
@@ -25,14 +27,12 @@ def main():
      while (True):
         sys.stdout.write("$ ")
         command = input()
-        index = getFirstWordEndIndex(command)
-        if (index == 0):
-            index = len(command)
+        endOfCommand, startOfArguements = getCommandAndArguementIndexes(command)
         if (command == "exit"):
             break
-        elif ("echo" in command[:index]):
-            if (index != 0):
-                command = command[index:]
+        elif ("echo" in command[:endOfCommand]):
+            if (startOfArguements != -1):    
+                command = command[startOfArguements:]
                 if ("'" not in command):
                     command = command.split()
                     command = " ".join(command)
@@ -42,11 +42,11 @@ def main():
                 print(command)
             else:
                 print("")
-        elif ("type" in command[:index]):
-            if (command[index:] in builtinCommands):
-                print(f"{command[index:]} is a shell builtin")
+        elif ("type" in command[:endOfCommand]):
+            if (command[startOfArguements:] in builtinCommands):
+                print(f"{command[startOfArguements:]} is a shell builtin")
             else:
-                command = command[index:] 
+                command = command[startOfArguements:] 
                 found, path = getExecutablePath(command)
                 if (found):
                     print(f"{command} is {path}")
@@ -54,21 +54,20 @@ def main():
                     print(f"{command}: not found")
         elif (command == "pwd"):
             print(os.getcwd())
-        elif ("cd" in command[:index]):
-            path = command[index:]
+        elif ("cd" in command[:endOfCommand]):
+            path = command[startOfArguements:] if startOfArguements != -1 else ""
             if (path == "~"):
                 path = os.environ.get('HOME')
             if (os.path.exists(path)):
                 os.chdir(path)
             else:
-                print(f"{command[:index]}: {path}: No such file or directory")
+                print(f"{command[:endOfCommand]}: {path}: No such file or directory")
         else:
-            index = index - 1
-            found, path = getExecutablePath(command[:index])
+            found, path = getExecutablePath(command[:endOfCommand])
             if (found):
                 subprocess.run(command, shell=True)
             else:
-                print(f"{command}: command not found")
+                print(f"{command[:endOfCommand]}: command not found")
 
 
 if __name__ == "__main__":
