@@ -21,7 +21,7 @@ def getExecutablePath(command):
 
 def main():
     # TODO: Uncomment the code below to pass the first stage
-     builtinCommands = ["echo", "type", "exit"]
+     builtinCommands = ["echo", "type", "exit", "pwd"]
      while (True):
         sys.stdout.write("$ ")
         command = input()
