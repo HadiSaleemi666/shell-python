@@ -1,6 +1,11 @@
-import sys
-import os
-import subprocess
+import sys, os, subprocess, shlex
+
+def convertInputToCommandAndArguments():
+    trueInput = input()
+    userInput = trueInput.split()
+    arguments = userInput[1:]
+    command = userInput[:1]
+    return command, arguments, trueInput
 
 def getExecutablePath(executable):
     system_path = os.environ.get('PATH')
@@ -17,17 +22,22 @@ def getExecutablePath(executable):
 def main():
     # TODO: Uncomment the code below to pass the first stage
      builtinCommands = ["echo", "type", "exit", "pwd", "cd"]
-     specialQuotes = ["'", '"']
+     specialQuotes = ['"', "'"]
      while (True):
         sys.stdout.write("$ ")
-        userInput = input()
-        userInput = userInput.split()
-        arguments = userInput[1:]
-        command = userInput[:1]
+        command, arguments, originalInput = convertInputToCommandAndArguments()
+
         if (command[0] == "exit"):
             break
+
         elif (command[0] == "echo"):
-            print(' '.join(arguments) if len(arguments) > 0 else "")
+            if (specialQuotes[0] not in originalInput and specialQuotes[1] not in originalInput):
+                print(' '.join(arguments) if len(arguments) > 0 else "")
+            else:
+                originalInput = originalInput[originalInput.find(" ") + 1:]
+                output = shlex.split(originalInput)
+                print(" ".join(output))
+
         elif (command[0] == "type"):
             if (arguments[0] in builtinCommands):
                 print(f"{" ".join(arguments)} is a shell builtin")
@@ -37,8 +47,10 @@ def main():
                     print(f"{" ".join(arguments)} is {path}")
                 else:
                     print(f"{" ".join(arguments)}: not found")
+
         elif (command[0] == "pwd"):
             print(os.getcwd())
+
         elif (command[0] == "cd"):
             path = " ".join(arguments)
             if (path == "~"):
@@ -47,6 +59,7 @@ def main():
                 os.chdir(path)
             else:
                 print(f"{command[0]}: {path}: No such file or directory")
+                
         else:
             found, path = getExecutablePath(command[0])
             if (found):
