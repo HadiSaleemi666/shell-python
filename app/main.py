@@ -49,7 +49,6 @@ def main():
         else:
             index = index - 1
             found, path = getExecutablePath(command[:index])
-            print(command[:index])
             if (found):
                 subprocess.run(command, shell=True)
             else:
