@@ -47,6 +47,12 @@ def main():
                     print(f"{command}: not found")
         elif (command == "pwd"):
             print(os.getcwd())
+        elif ("cd" in command[:index]):
+            path = command[index:]
+            if (os.path.exists(path)):
+                os.chdir(path)
+            else:
+                print(f"{command[:index - 1]}: {path}: No such file or directory")
         else:
             index = index - 1
             found, path = getExecutablePath(command[:index])
