@@ -82,7 +82,7 @@ def SplitRawArguments(rawArguments):
                     splitArgument += rawArguments[i]
             case " ":
                 if not inDoubleQuote and not inSingleQuote:
-                    if i - 1 > 0 and rawArguments[i - 1] in specialQuotes:
+                    if i - 1 > 0 and rawArguments[i - 1] != " ":
                         splitRawArgumentsList.append(splitArgument)
                         splitArgument = ""
                     else:
@@ -118,7 +118,7 @@ def main():
         #.find() returns -1 if it fails to find specified delimeter
         rawArguments = userInput[userInput.find(" ") + 1:] if userInput.find(" ") + 1 != 0 else "" 
         command = userInput[:userInput.find(" ")] if userInput.find(" ") + 1 != 0 else userInput
-        shlexOutput = shlex.split(userInput)
+        #shlexOutput = shlex.split(userInput)
 
         splitRawArgumentsList = []
         splitRawArgumentsList = SplitRawArguments(rawArguments)
