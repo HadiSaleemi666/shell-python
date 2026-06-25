@@ -155,7 +155,7 @@ def main():
         else:
             found, path = getExecutablePath(command)
             if (found):
-                subprocess.run((command + " " + " ".join(shlexOutput)), shell=True)
+                subprocess.run((command + " " + " ".join(splitRawArgumentsList)), shell=True)
             else:
                 print(f"{command}: command not found")
 
