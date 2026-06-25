@@ -1,11 +1,106 @@
-import sys, os, subprocess, shlex
+import sys, os, subprocess
 
-def convertInputToCommandAndArguments():
-    trueInput = input()
-    userInput = trueInput.split()
-    arguments = userInput[1:]
-    command = userInput[:1]
-    return command, arguments, trueInput
+def ParseArguments(splitRawArgumentsList):
+    inSingleQuote = False
+    inDoubleQuote = False
+    parsedArgument = ""
+    parsedArgumentsList = []
+    splitRawArgumentsList = ",".join(splitRawArgumentsList)
+
+    if len(splitRawArgumentsList) == 0:
+        return parsedArgumentsList
+    
+    for character in splitRawArgumentsList:
+        match character:
+            case ",":
+                if not inSingleQuote or not inDoubleQuote:
+                    parsedArgumentsList.append(parsedArgument)
+                    parsedArgument = ""
+                else:
+                    parsedArgument += character
+            case "'":
+                if not inSingleQuote and not inDoubleQuote:
+                    inSingleQuote = True
+                elif inSingleQuote and not inDoubleQuote:
+                    inSingleQuote = False
+                elif inSingleQuote and inDoubleQuote:
+                    continue
+                else:
+                    parsedArgument += character
+            case '"':
+                if not inSingleQuote and not inDoubleQuote:
+                    inDoubleQuote = True
+                elif not inSingleQuote and inDoubleQuote:
+                    inDoubleQuote = False
+                elif inSingleQuote and inDoubleQuote:
+                    continue
+                else:
+                    parsedArgument += character
+            case " ":
+                if inSingleQuote or inDoubleQuote:
+                    parsedArgument += character
+                else:
+                    continue
+            case _:
+                parsedArgument += character
+
+    if (len(parsedArgument) > 0):
+        parsedArgumentsList.append(parsedArgument)
+    
+    return parsedArgumentsList
+
+def SplitRawArguments(rawArguments):
+    inSingleQuote = False
+    inDoubleQuote = False
+    splitArgument = ""
+    splitRawArgumentsList = []
+
+    if len(rawArguments) == 0:
+        return splitRawArgumentsList
+
+    for i in range(len(rawArguments)):
+        match rawArguments[i]:
+            case "'":
+                if not inSingleQuote and not inDoubleQuote:
+                    splitArgument += rawArguments[i]
+                    inSingleQuote = True
+                elif inSingleQuote and not inDoubleQuote:
+                    splitArgument += rawArguments[i]
+                    inSingleQuote = False
+                elif not inSingleQuote and inDoubleQuote:
+                    splitArgument += rawArguments[i]
+                    inSingleQuote = True
+                else:
+                    splitArgument += rawArguments[i]
+                    inSingleQuote = False
+
+            case '"':
+                if not inDoubleQuote and not inSingleQuote:
+                    splitArgument += rawArguments[i]
+                    inDoubleQuote = True
+                elif inDoubleQuote and not inSingleQuote:
+                    splitArgument += rawArguments[i]
+                    inDoubleQuote = False
+                elif not inDoubleQuote and inSingleQuote:
+                    splitArgument += rawArguments[i]
+                    inDoubleQuote = True
+                else:
+                    splitArgument += rawArguments[i]
+                    inDoubleQuote = False
+            case " ":
+                if not inDoubleQuote and not inSingleQuote:
+                    splitRawArgumentsList.append(splitArgument)
+                    splitArgument = ""
+                    continue
+                else:
+                    splitArgument += rawArguments[i]
+            case _:
+                splitArgument += rawArguments[i]
+
+    if (len(splitArgument) != 0):
+        splitRawArgumentsList.append(splitArgument)
+    
+    return splitRawArgumentsList
 
 def getExecutablePath(executable):
     system_path = os.environ.get('PATH')
@@ -22,50 +117,51 @@ def getExecutablePath(executable):
 def main():
     # TODO: Uncomment the code below to pass the first stage
      builtinCommands = ["echo", "type", "exit", "pwd", "cd"]
-     specialQuotes = ['"', "'"]
      while (True):
         sys.stdout.write("$ ")
-        command, arguments, originalInput = convertInputToCommandAndArguments()
+        userInput = input()
+        #.find() returns -1 if it fails to find specified delimeter
+        rawArguments = userInput[userInput.find(" ") + 1:] if userInput.find(" ") + 1 != 0 else "" 
+        command = userInput[:userInput.find(" ")] if userInput.find(" ") + 1 != 0 else userInput
 
-        if (command[0] == "exit"):
+        splitRawArgumentsList = []
+        splitRawArgumentsList = SplitRawArguments(rawArguments)
+        parsedArgumentsList = ParseArguments(splitRawArgumentsList)
+        
+        if (command == "exit"):
             break
 
-        elif (command[0] == "echo"):
-            if (specialQuotes[0] not in originalInput and specialQuotes[1] not in originalInput):
-                print(' '.join(arguments) if len(arguments) > 0 else "")
-            else:
-                originalInput = originalInput[originalInput.find(" ") + 1:]
-                output = shlex.split(originalInput)
-                print(" ".join(output))
+        elif (command == "echo"):
+            print(' '.join(parsedArgumentsList) if len(parsedArgumentsList) > 0 else "")
 
-        elif (command[0] == "type"):
-            if (arguments[0] in builtinCommands):
-                print(f"{" ".join(arguments)} is a shell builtin")
+        elif (command == "type"):
+            if (parsedArgumentsList[0] in builtinCommands):
+                print(f"{" ".join(parsedArgumentsList)} is a shell builtin")
             else:
-                found, path = getExecutablePath(" ".join(arguments))
+                found, path = getExecutablePath(" ".join(parsedArgumentsList))
                 if (found):
-                    print(f"{" ".join(arguments)} is {path}")
+                    print(f"{" ".join(parsedArgumentsList)} is {path}")
                 else:
-                    print(f"{" ".join(arguments)}: not found")
+                    print(f"{" ".join(parsedArgumentsList)}: not found")
 
-        elif (command[0] == "pwd"):
+        elif (command == "pwd"):
             print(os.getcwd())
 
-        elif (command[0] == "cd"):
-            path = " ".join(arguments)
+        elif (command == "cd"):
+            path = " ".join(parsedArgumentsList)
             if (path == "~"):
                 path = os.environ.get('HOME')
             if (os.path.exists(path)):
                 os.chdir(path)
             else:
-                print(f"{command[0]}: {path}: No such file or directory")
+                print(f"{command}: {path}: No such file or directory")
                 
         else:
-            found, path = getExecutablePath(command[0])
+            found, path = getExecutablePath(command)
             if (found):
-                subprocess.run((command[0] + " " + " ".join(arguments)), shell=True)
+                subprocess.run((command + " " + " ".join(parsedArgumentsList)), shell=True)
             else:
-                print(f"{command[0]}: command not found")
+                print(f"{command}: command not found")
 
 
 if __name__ == "__main__":
