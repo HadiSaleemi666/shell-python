@@ -1,115 +1,5 @@
 import sys, os, subprocess, shlex
 
-# def ParseArgumentsForQuotes(processedArgumentsList):
-#     inSingleQuote = False
-#     inDoubleQuote = False
-#     parsedArgument = ""
-#     parsedArgumentsList = []
-#     afterBackSlash = False
-#     processedArgumentsList = ",".join(processedArgumentsList)
-
-#     if len(processedArgumentsList) == 0:
-#         return parsedArgumentsList
-    
-#     for character in processedArgumentsList:
-#         if afterBackSlash:
-#             parsedArgument += character
-#             afterBackSlash = False
-#             continue
-#         match character:
-#             case ",":
-#                 if not inSingleQuote or not inDoubleQuote:
-#                     parsedArgumentsList.append(parsedArgument)
-#                     parsedArgument = ""
-#                 else:
-#                     parsedArgument += character
-#             case "'":
-#                 if not inSingleQuote and not inDoubleQuote:
-#                     inSingleQuote = True
-#                 elif inSingleQuote and not inDoubleQuote:
-#                     inSingleQuote = False
-#                 elif inSingleQuote and inDoubleQuote:
-#                     continue
-#                 else:
-#                     parsedArgument += character
-#             case '"':
-#                 if not inSingleQuote and not inDoubleQuote:
-#                     inDoubleQuote = True
-#                 elif not inSingleQuote and inDoubleQuote:
-#                     inDoubleQuote = False
-#                 elif inSingleQuote and inDoubleQuote:
-#                     continue
-#                 else:
-#                     parsedArgument += character
-#             case " ":
-#                 if inSingleQuote or inDoubleQuote:
-#                     parsedArgument += character
-#                 else:
-#                     continue
-#             case "\\":
-#                 afterBackSlash = True
-#             case _:
-#                 parsedArgument += character
-
-#     if (len(parsedArgument) > 0):
-#         parsedArgumentsList.append(parsedArgument)
-    
-#     return parsedArgumentsList
-
-# def ProcessArguments(rawArguments):
-#     inSingleQuote = False
-#     inDoubleQuote = False
-#     processedArgument = ""
-#     afterBackslash = False
-#     processedArgumentsList = []
-
-#     if len(rawArguments) == 0:
-#         return processedArgumentsList
-
-#     for i in range(len(rawArguments)):
-#         if afterBackslash:
-#             processedArgument += rawArguments[i]
-#             afterBackslash = False
-#             continue
-#         match rawArguments[i]:
-#             case "'":
-#                 if not inSingleQuote and not inDoubleQuote:
-#                     processedArgument += rawArguments[i]
-#                     inSingleQuote = True
-#                 elif inSingleQuote and not inDoubleQuote:
-#                     processedArgument += rawArguments[i]
-#                     inSingleQuote = False
-#                 else:
-#                     processedArgument += rawArguments[i]
-
-#             case '"':
-#                 if not inDoubleQuote and not inSingleQuote:
-#                     processedArgument += rawArguments[i]
-#                     inDoubleQuote = True
-#                 elif inDoubleQuote and not inSingleQuote:
-#                     processedArgument += rawArguments[i]
-#                     inDoubleQuote = False
-#                 else:
-#                     processedArgument += rawArguments[i]
-#             case " ":
-#                 if not inDoubleQuote and not inSingleQuote:
-#                     if i - 1 > 0 and rawArguments[i - 1] != " ":
-#                         processedArgumentsList.append(processedArgument)
-#                         processedArgument = ""
-#                     else:
-#                         continue
-#                 else:
-#                     processedArgument += rawArguments[i]
-#             case "\\":
-#                 afterBackslash = True
-#             case _:
-#                 processedArgument += rawArguments[i]
-
-#     if (len(processedArgument) != 0):
-#         processedArgumentsList.append(processedArgument)
-    
-#     return processedArgumentsList
-
 def getExecutablePath(executable):
     system_path = os.environ.get('PATH')
     directories = system_path.split(os.pathsep)
@@ -128,9 +18,7 @@ def main():
      while (True):
         sys.stdout.write("$ ")
         userInput = input()
-        #.find() returns -1 if it fails to find specified delimeter
-        # rawArguments = userInput[userInput.find(" ") + 1:] if userInput.find(" ") + 1 != 0 else "" 
-        # command = userInput[:userInput.find(" ")] if userInput.find(" ") + 1 != 0 else userInput
+
         try:
             parsedInput = shlex.split(userInput)
         except ValueError:
@@ -138,11 +26,6 @@ def main():
 
         command = parsedInput[:1]
         arguments = parsedInput[1:]
-
-
-        processedArgumentsList = []
-        #processedArgumentsList = ProcessArguments(rawArguments)
-        #parsedArgumentsList = ParseArgumentsForQuotes(processedArgumentsList)
         
         if (command[0] == "exit"):
             break
