@@ -47,8 +47,6 @@ def ParseArguments(splitRawArgumentsList):
     if (len(parsedArgument) > 0):
         parsedArgumentsList.append(parsedArgument)
     
-    print("splitRawArguments: " + splitRawArgumentsList)
-    
     return parsedArgumentsList
 
 def SplitRawArguments(rawArguments):
