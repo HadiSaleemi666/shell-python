@@ -1,16 +1,16 @@
 import sys, os, subprocess, shlex
 
-def ParseArguments(splitRawArgumentsList):
+def ParseArgumentsForQuotes(processedArgumentsList):
     inSingleQuote = False
     inDoubleQuote = False
     parsedArgument = ""
     parsedArgumentsList = []
-    splitRawArgumentsList = ",".join(splitRawArgumentsList)
+    processedArgumentsList = ",".join(processedArgumentsList)
 
-    if len(splitRawArgumentsList) == 0:
+    if len(processedArgumentsList) == 0:
         return parsedArgumentsList
     
-    for character in splitRawArgumentsList:
+    for character in processedArgumentsList:
         match character:
             case ",":
                 if not inSingleQuote or not inDoubleQuote:
@@ -49,53 +49,58 @@ def ParseArguments(splitRawArgumentsList):
     
     return parsedArgumentsList
 
-def SplitRawArguments(rawArguments):
+def ProcessArguments(rawArguments):
     inSingleQuote = False
     inDoubleQuote = False
-    splitArgument = ""
-    splitRawArgumentsList = []
-    specialQuotes = ["'", '"']
+    processedArgument = ""
+    processedArgumentsList = []
 
     if len(rawArguments) == 0:
-        return splitRawArgumentsList
+        return processedArgumentsList
 
     for i in range(len(rawArguments)):
         match rawArguments[i]:
             case "'":
                 if not inSingleQuote and not inDoubleQuote:
-                    splitArgument += rawArguments[i]
+                    processedArgument += rawArguments[i]
                     inSingleQuote = True
                 elif inSingleQuote and not inDoubleQuote:
-                    splitArgument += rawArguments[i]
+                    processedArgument += rawArguments[i]
                     inSingleQuote = False
                 else:
-                    splitArgument += rawArguments[i]
+                    processedArgument += rawArguments[i]
 
             case '"':
                 if not inDoubleQuote and not inSingleQuote:
-                    splitArgument += rawArguments[i]
+                    processedArgument += rawArguments[i]
                     inDoubleQuote = True
                 elif inDoubleQuote and not inSingleQuote:
-                    splitArgument += rawArguments[i]
+                    processedArgument += rawArguments[i]
                     inDoubleQuote = False
                 else:
-                    splitArgument += rawArguments[i]
+                    processedArgument += rawArguments[i]
             case " ":
                 if not inDoubleQuote and not inSingleQuote:
                     if i - 1 > 0 and rawArguments[i - 1] != " ":
-                        splitRawArgumentsList.append(splitArgument)
-                        splitArgument = ""
+                        processedArgumentsList.append(processedArgument)
+                        processedArgument = ""
                     else:
                         continue
                 else:
-                    splitArgument += rawArguments[i]
+                    processedArgument += rawArguments[i]
+            case "\\":
+                if i + 1 < len(rawArguments):
+                    i = i + 1
+                    processedArgument += rawArguments[i]
+                else:
+                    continue
             case _:
-                splitArgument += rawArguments[i]
+                processedArgument += rawArguments[i]
 
-    if (len(splitArgument) != 0):
-        splitRawArgumentsList.append(splitArgument)
+    if (len(processedArgument) != 0):
+        processedArgumentsList.append(processedArgument)
     
-    return splitRawArgumentsList
+    return processedArgumentsList
 
 def getExecutablePath(executable):
     system_path = os.environ.get('PATH')
@@ -120,9 +125,9 @@ def main():
         command = userInput[:userInput.find(" ")] if userInput.find(" ") + 1 != 0 else userInput
         #shlexOutput = shlex.split(userInput)
 
-        splitRawArgumentsList = []
-        splitRawArgumentsList = SplitRawArguments(rawArguments)
-        parsedArgumentsList = ParseArguments(splitRawArgumentsList)
+        processedArgumentsList = []
+        processedArgumentsList = ProcessArguments(rawArguments)
+        parsedArgumentsList = ParseArgumentsForQuotes(processedArgumentsList)
         
         if (command == "exit"):
             break
@@ -155,7 +160,7 @@ def main():
         else:
             found, path = getExecutablePath(command)
             if (found):
-                subprocess.run((command + " " + " ".join(splitRawArgumentsList)), shell=True)
+                subprocess.run((command + " " + " ".join(processedArgumentsList)), shell=True)
             else:
                 print(f"{command}: command not found")
 
