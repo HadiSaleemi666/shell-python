@@ -1,16 +1,20 @@
-import sys, os, subprocess, shlex
+import sys, os, subprocess
 
 def ParseArgumentsForQuotes(processedArgumentsList):
     inSingleQuote = False
     inDoubleQuote = False
     parsedArgument = ""
     parsedArgumentsList = []
+    afterBackSlash = False
     processedArgumentsList = ",".join(processedArgumentsList)
 
     if len(processedArgumentsList) == 0:
         return parsedArgumentsList
     
     for character in processedArgumentsList:
+        if afterBackSlash:
+            parsedArgument += character
+            afterBackSlash = False
         match character:
             case ",":
                 if not inSingleQuote or not inDoubleQuote:
@@ -41,6 +45,8 @@ def ParseArgumentsForQuotes(processedArgumentsList):
                     parsedArgument += character
                 else:
                     continue
+            case "\\":
+                afterBackSlash = True
             case _:
                 parsedArgument += character
 
