@@ -1,4 +1,4 @@
-import sys, os, subprocess
+import sys, os, subprocess, shlex
 
 def ParseArguments(splitRawArgumentsList):
     inSingleQuote = False
@@ -118,6 +118,7 @@ def main():
         #.find() returns -1 if it fails to find specified delimeter
         rawArguments = userInput[userInput.find(" ") + 1:] if userInput.find(" ") + 1 != 0 else "" 
         command = userInput[:userInput.find(" ")] if userInput.find(" ") + 1 != 0 else userInput
+        shlexOutput = shlex.split(userInput)
 
         splitRawArgumentsList = []
         splitRawArgumentsList = SplitRawArguments(rawArguments)
@@ -154,7 +155,7 @@ def main():
         else:
             found, path = getExecutablePath(command)
             if (found):
-                subprocess.run((command + " " + " ".join(parsedArgumentsList)), shell=True)
+                subprocess.run((command + " " + " ".join(shlexOutput)), shell=True)
             else:
                 print(f"{command}: command not found")
 
