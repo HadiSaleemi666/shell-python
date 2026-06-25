@@ -15,6 +15,7 @@ def ParseArgumentsForQuotes(processedArgumentsList):
         if afterBackSlash:
             parsedArgument += character
             afterBackSlash = False
+            continue
         match character:
             case ",":
                 if not inSingleQuote or not inDoubleQuote:
