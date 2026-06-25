@@ -54,6 +54,7 @@ def SplitRawArguments(rawArguments):
     inDoubleQuote = False
     splitArgument = ""
     splitRawArgumentsList = []
+    specialQuotes = ["'", '"']
 
     if len(rawArguments) == 0:
         return splitRawArgumentsList
@@ -89,9 +90,11 @@ def SplitRawArguments(rawArguments):
                     inDoubleQuote = False
             case " ":
                 if not inDoubleQuote and not inSingleQuote:
-                    splitRawArgumentsList.append(splitArgument)
-                    splitArgument = ""
-                    continue
+                    if i - 1 > 0 and rawArguments[i - 1] in specialQuotes:
+                        splitRawArgumentsList.append(splitArgument)
+                        splitArgument = ""
+                    else:
+                        continue
                 else:
                     splitArgument += rawArguments[i]
             case _:
