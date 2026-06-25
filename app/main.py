@@ -47,6 +47,8 @@ def ParseArguments(splitRawArgumentsList):
     if (len(parsedArgument) > 0):
         parsedArgumentsList.append(parsedArgument)
     
+    print("splitRawArguments: " + splitRawArgumentsList)
+    
     return parsedArgumentsList
 
 def SplitRawArguments(rawArguments):
@@ -68,12 +70,8 @@ def SplitRawArguments(rawArguments):
                 elif inSingleQuote and not inDoubleQuote:
                     splitArgument += rawArguments[i]
                     inSingleQuote = False
-                elif not inSingleQuote and inDoubleQuote:
-                    splitArgument += rawArguments[i]
-                    inSingleQuote = True
                 else:
                     splitArgument += rawArguments[i]
-                    inSingleQuote = False
 
             case '"':
                 if not inDoubleQuote and not inSingleQuote:
@@ -82,12 +80,8 @@ def SplitRawArguments(rawArguments):
                 elif inDoubleQuote and not inSingleQuote:
                     splitArgument += rawArguments[i]
                     inDoubleQuote = False
-                elif not inDoubleQuote and inSingleQuote:
-                    splitArgument += rawArguments[i]
-                    inDoubleQuote = True
                 else:
                     splitArgument += rawArguments[i]
-                    inDoubleQuote = False
             case " ":
                 if not inDoubleQuote and not inSingleQuote:
                     if i - 1 > 0 and rawArguments[i - 1] in specialQuotes:
