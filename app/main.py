@@ -1,6 +1,6 @@
 import sys, os, subprocess, shlex
 
-redirectionTypeList = ["1>", ">", "2>", ">>", "1>>"]
+redirectionTypeList = ["1>", ">", "2>", ">>", "1>>", "2>>"]
 
 def RedirectOutput(argumentsList):
     indexOfArgumentsRemoval = -10
@@ -42,6 +42,8 @@ def RedirectOutput(argumentsList):
                 sys.stdout = open(redirectedLocation, 'w')
             case "1>>" | ">>":
                 sys.stdout = open(redirectedLocation, 'a')
+            case "2>>":
+                sys.stderr = open(redirectedLocation, 'a')
             case _:
                 pass
     else:
