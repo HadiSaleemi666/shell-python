@@ -65,12 +65,16 @@ def getExecutablePath(executable):
     return found, path
 
 def CompleteWord(prefix, state):
-    #state is essentially the number of times tab is pressed; that is, if on the first key press for 'e', you got echo, if you press tab again you should get 'exit' from what I understand
+    #n
     matches = []
     for command in builtinCommands:
         if command.startswith(prefix):
             matches.append(command)
-    return matches[state] + " " if state < len(matches) else ""
+        try: 
+            return matches[state] + " " if state < len(matches) else None
+        except:
+            return None
+
 
 def main():
     # TODO: Uncomment the code below to pass the first stage
