@@ -3,6 +3,19 @@ import sys, os, subprocess, shlex, readline
 redirectionTypeList = ["1>", ">", "2>", ">>", "1>>", "2>>"]
 builtinCommands = ["echo", "type", "exit", "pwd", "cd"]
 
+def getAutoCompleteList():
+    autoCompleteList = [command for command in builtinCommands]
+    system_path = os.environ.get('PATH')
+    directories = system_path.split(os.pathsep)
+    executableDirectoryList = []
+    for directory in directories: 
+        if os.path.exists(directory):
+            executableDirectoryList = os.listdir(directory)
+            autoCompleteList += executableDirectoryList
+            
+    return autoCompleteList
+
+
 def RedirectOutput(argumentsList):
     indexOfArgumentsRemoval = -10
     isRedirectionUnsuccessful = False
@@ -65,9 +78,10 @@ def getExecutablePath(executable):
     return found, path
 
 def CompleteWord(prefix, state):
-    #n
+    #state is simply a counter used to identify the number of options available as well as to identify the stopping condition 
+    commands = getAutoCompleteList()
     matches = []
-    for command in builtinCommands:
+    for command in commands:
         if command.startswith(prefix):
             matches.append(command)
     try: 
