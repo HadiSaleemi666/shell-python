@@ -1,36 +1,50 @@
 import sys, os, subprocess, shlex
 
+redirectionTypeList = ["1>", ">", "2>"]
+
 def RedirectOutput(argumentsList):
-    #redirecting output
-    indexOfArgumentsRemoval = -1
+    indexOfArgumentsRemoval = -10
     isRedirectionUnsuccessful = False
-    for i in range(len(argumentsList)):
-        match argumentsList[i]:
+    redirectionType = None
+
+    for type in redirectionTypeList:
+        try:
+            indexOfArgumentsRemoval = argumentsList.index(type)
+        except ValueError:
+            continue
+        redirectionType = type
+
+    if redirectionType is not None:
+
+        try:
+            redirectedLocation = argumentsList[indexOfArgumentsRemoval + 1]
+        except IndexError:
+            print("Redirection specified but no location is provided.")
+            isRedirectionUnsuccessful = True
+            return isRedirectionUnsuccessful, indexOfArgumentsRemoval
+        
+        if not os.path.exists(redirectedLocation):
+            createFile = []
+            createFile.append("touch")
+            createFile.append(redirectedLocation)
+            found, path = getExecutablePath(createFile[0])
+            if (found):
+                subprocess.run(createFile, executable=path)
+            else:
+                print("Error occurred in 'touch' path retrieval.")
+                isRedirectionUnsuccessful = True
+                return isRedirectionUnsuccessful, indexOfArgumentsRemoval
+            
+        match redirectionType:
+            case "2>":
+                sys.stderr = open(redirectedLocation, 'w')
             case "1>" | ">":
-                #redirection of standard output case
-                indexOfArgumentsRemoval = i
-                try:
-                    redirectedLocation = argumentsList[i + 1]
-                except IndexError:
-                    print("Redirection specified but no location is provided.")
-                    isRedirectionUnsuccessful = True
-                    return isRedirectionUnsuccessful, indexOfArgumentsRemoval
-                if os.path.exists(redirectedLocation):
-                    sys.stdout = open(redirectedLocation, 'w')
-                else:
-                    createFile = []
-                    createFile.append("touch")
-                    createFile.append(redirectedLocation)
-                    found, path = getExecutablePath(createFile[0])
-                    if (found):
-                        subprocess.run(createFile, executable=path)
-                    else:
-                        print("Error occurred in 'touch' path retrieval.")
-                        isRedirectionUnsuccessful = True
-                        return isRedirectionUnsuccessful, indexOfArgumentsRemoval
-                    sys.stdout = open(redirectedLocation, 'w')
+                sys.stdout = open(redirectedLocation, 'w')
             case _:
-                continue
+                pass
+    else:
+        return isRedirectionUnsuccessful, indexOfArgumentsRemoval
+    
     return isRedirectionUnsuccessful, indexOfArgumentsRemoval
 
 def getExecutablePath(executable):
@@ -48,6 +62,8 @@ def getExecutablePath(executable):
 def main():
     # TODO: Uncomment the code below to pass the first stage
      builtinCommands = ["echo", "type", "exit", "pwd", "cd"]
+     originalSTDOUT = sys.stdout
+     originalSTDERR = sys.stderr
      while (True):
         sys.stdout.write("$ ")
         userInput = input()
@@ -59,18 +75,18 @@ def main():
 
         command = parsedInput[:1]
         arguments = parsedInput[1:]
-        originalOutputLocation = sys.stdout
         indexOfArgumentRemoval = -1
 
         #redirect output
-        if "1>" in arguments or ">" in arguments:
-            isRedirectionUnsuccessful, indexOfArgumentRemoval = RedirectOutput(arguments)
-        
-            if (isRedirectionUnsuccessful):
-                sys.stdout = originalOutputLocation
-                continue
+        for redirectionType in redirectionTypeList:
+            if redirectionType in arguments:
+                isRedirectionUnsuccessful, indexOfArgumentRemoval = RedirectOutput(arguments)
             
-            arguments = arguments[:indexOfArgumentRemoval]
+                if (isRedirectionUnsuccessful):
+                    sys.stdout = originalSTDOUT
+                    continue
+                
+                arguments = arguments[:indexOfArgumentRemoval]
         
         if (command[0] == "exit"):
             break
@@ -103,12 +119,15 @@ def main():
         else:
             found, path = getExecutablePath(command[0])
             if (found):
-                subprocess.run([command[0]] + arguments, executable=path, stdout=sys.stdout)
+                subprocess.run([command[0]] + arguments, executable=path, stdout=sys.stdout, stderr=sys.stderr)
             else:
                 print(f"{command[0]}: command not found")
         
-        if sys.stdout != originalOutputLocation:
-            sys.stdout = originalOutputLocation
+        if sys.stdout != originalSTDOUT:
+            sys.stdout = originalSTDOUT
+
+        if sys.stderr != originalSTDERR:
+            sys.stderr = originalSTDERR
 
 
 if __name__ == "__main__":
