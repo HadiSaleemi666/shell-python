@@ -67,7 +67,7 @@ def getExecutablePath(executable):
 def CompleteWord(prefix):
     for command in builtinCommands:
         if command.startswith(prefix):
-            return command
+            return command + " "
     return None
 
 def main():
