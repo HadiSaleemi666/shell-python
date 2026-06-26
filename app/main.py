@@ -70,10 +70,10 @@ def CompleteWord(prefix, state):
     for command in builtinCommands:
         if command.startswith(prefix):
             matches.append(command)
-        try: 
-            return matches[state] + " " if state < len(matches) else None
-        except:
-            return None
+    try: 
+        return matches[state] + " " if state < len(matches) else None
+    except:
+        return None
 
 
 def main():
@@ -87,10 +87,14 @@ def main():
         sys.stdout.write("$ ")
         sys.stdout.flush()
         userInput = input()
+        parsedInput = ""
 
         try:
             parsedInput = shlex.split(userInput)
         except ValueError:
+            continue
+
+        if not parsedInput:
             continue
    
         command = parsedInput[:1]
