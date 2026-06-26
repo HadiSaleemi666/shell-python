@@ -1,6 +1,7 @@
-import sys, os, subprocess, shlex
+import sys, os, subprocess, shlex, readline
 
 redirectionTypeList = ["1>", ">", "2>", ">>", "1>>", "2>>"]
+builtinCommands = ["echo", "type", "exit", "pwd", "cd"]
 
 def RedirectOutput(argumentsList):
     indexOfArgumentsRemoval = -10
@@ -63,11 +64,19 @@ def getExecutablePath(executable):
             return found, path
     return found, path
 
+def CompleteWord(prefix):
+    for command in builtinCommands:
+        if command.startswith(prefix):
+            return command
+    return None
+
 def main():
     # TODO: Uncomment the code below to pass the first stage
-     builtinCommands = ["echo", "type", "exit", "pwd", "cd"]
      originalSTDOUT = sys.stdout
      originalSTDERR = sys.stderr
+     readline.set_completer(CompleteWord)
+     readline.parse_and_bind("tab: complete")
+
      while (True):
         sys.stdout.write("$ ")
         userInput = input()
@@ -87,7 +96,6 @@ def main():
                 isRedirectionUnsuccessful, indexOfArgumentRemoval = RedirectOutput(arguments)
             
                 if (isRedirectionUnsuccessful):
-                    sys.stdout = originalSTDOUT
                     continue
                 
                 arguments = arguments[:indexOfArgumentRemoval]
