@@ -58,7 +58,7 @@ def main():
         else:
             found, path = getExecutablePath(command[0])
             if (found):
-                subprocess.run((command[0] + " " + " ".join(arguments)), shell=True)
+                subprocess.run([command[0]] + arguments, executable=path)
             else:
                 print(f"{command[0]}: command not found")
 
