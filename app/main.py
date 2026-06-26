@@ -2,6 +2,7 @@ import sys, os, subprocess, shlex, readline
 
 redirectionTypeList = ["1>", ">", "2>", ">>", "1>>", "2>>"]
 builtinCommands = ["echo", "type", "exit", "pwd", "cd"]
+matches = []
 
 def getAutoCompleteList():
     autoCompleteList = [command for command in builtinCommands]
@@ -78,9 +79,9 @@ def getExecutablePath(executable):
     return found, path
 
 def CompleteWord(prefix, state):
-    #state is simply a counter used to identify the number of options available as well as to identify the stopping condition 
-    commands = getAutoCompleteList()
-    matches = []
+    #state is simply a counter used to identify the number of options available as well as to identify the stopping condition
+    if state == 0: 
+        commands = getAutoCompleteList()
     for command in commands:
         if command.startswith(prefix):
             matches.append(command)
@@ -88,6 +89,10 @@ def CompleteWord(prefix, state):
         return matches[state] + " " if state < len(matches) else None
     except:
         return None
+    
+def DisplayMatches(substitution, matches, longest_match_len):
+    print()
+    print("  ".join(sorted(matches)))
 
 
 def main():
@@ -96,6 +101,7 @@ def main():
      originalSTDERR = sys.stderr
      readline.set_completer(CompleteWord)
      readline.parse_and_bind("tab: complete")
+     readline.set_completion_display_matches_hook(DisplayMatches)
 
      while (True):
         sys.stdout.write("$ ")
