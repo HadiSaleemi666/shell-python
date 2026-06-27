@@ -80,16 +80,13 @@ def getExecutablePath(executable):
 
 def CompleteWord(prefix, state):
     #state is simply a counter used to identify the number of options available as well as to identify the stopping condition
+    global matches
     if prefix == '':
-        prefix = '?'
+        return None
     if state == 0: 
-        matches = []
         commands = getAutoCompleteList()
-    for command in commands:
-        if command.startswith(prefix):
-            matches.append(command)
-    sorted(matches)
-    print("\x07")
+        commands = list(set(commands))
+        matches = [command for command in commands if command.startswith(prefix)]
     return matches[state] + " " if state < len(matches) else None
     
 def DisplayMatches(substitution, matches, longest_match_len):
