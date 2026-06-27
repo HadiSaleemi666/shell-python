@@ -37,18 +37,6 @@ def RedirectOutput(argumentsList):
             print("Redirection specified but no location is provided.")
             isRedirectionUnsuccessful = True
             return isRedirectionUnsuccessful, indexOfArgumentsRemoval
-        
-        if not os.path.exists(redirectedLocation):
-            createFile = []
-            createFile.append("touch")
-            createFile.append(redirectedLocation)
-            found, path = getExecutablePath(createFile[0])
-            if (found):
-                subprocess.run(createFile, executable=path)
-            else:
-                print("Error occurred in 'touch' path retrieval.")
-                isRedirectionUnsuccessful = True
-                return isRedirectionUnsuccessful, indexOfArgumentsRemoval
             
         match redirectionType:
             case "2>":
@@ -81,18 +69,19 @@ def getExecutablePath(executable):
 def CompleteWord(prefix, state):
     #state is simply a counter used to identify the number of options available as well as to identify the stopping condition
     global matches
+    userInput = readline.get_line_buffer()
+    index = userInput.find(" ")
+    index += 1
+    isUserWritingArgument = bool(index)
 
+    prefix = userInput[index:] if isUserWritingArgument else prefix
+    
     if prefix == '':
         return None
     
-    index = prefix.find(" ")
-    index += 1
-    isUserWritingArgument = not bool(index)
-
     if state == 0:
         match isUserWritingArgument: 
             case True:
-                prefix = prefix[index:]
                 documentsInCWDList = os.listdir(os.getcwd()) 
                 documentsInCWDList = list(set(documentsInCWDList))
                 matches = [document for document in documentsInCWDList if document.startswith(prefix)]
@@ -115,6 +104,8 @@ def main():
     # TODO: Uncomment the code below to pass the first stage
      originalSTDOUT = sys.stdout
      originalSTDERR = sys.stderr
+     completerDelimiters = readline.get_completer_delims()
+     readline.set_completer_delims(completerDelimiters.replace("-", ""))
      readline.set_completer(CompleteWord)
      readline.parse_and_bind("tab: complete")
      readline.set_completion_display_matches_hook(DisplayMatches)
