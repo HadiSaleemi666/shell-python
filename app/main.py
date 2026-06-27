@@ -80,19 +80,22 @@ def getExecutablePath(executable):
 
 def CompleteWord(prefix, state):
     #state is simply a counter used to identify the number of options available as well as to identify the stopping condition
+    if prefix == '':
+        prefix = '?'
     if state == 0: 
+        matches = []
         commands = getAutoCompleteList()
     for command in commands:
         if command.startswith(prefix):
             matches.append(command)
-    try: 
-        return matches[state] + " " if state < len(matches) else None
-    except:
-        return None
+    sorted(matches)
+    return matches[state] + " " if state < len(matches) else None
     
 def DisplayMatches(substitution, matches, longest_match_len):
     print()
     print("  ".join(sorted(matches)))
+    sys.stdout.write("$ " + readline.get_line_buffer())
+    sys.stdout.flush()
 
 
 def main():
@@ -101,7 +104,7 @@ def main():
      originalSTDERR = sys.stderr
      readline.set_completer(CompleteWord)
      readline.parse_and_bind("tab: complete")
-     readline.set_completion_display_matches_hook(DisplayMatches)
+     #readline.set_completion_display_matches_hook(DisplayMatches)
 
      while (True):
         sys.stdout.write("$ ")
