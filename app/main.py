@@ -66,15 +66,19 @@ def getExecutablePath(executable):
             return found, path
     return found, path
 
+def getDirectory(prefix, userInput, startIndex, isUserWritingArgument):
+    prefix = userInput[startIndex:] if isUserWritingArgument and len(prefix) == 0 else prefix
+    endIndex = userInput.find(prefix)
+    directory = os.getcwd() + os.path.sep + userInput[startIndex:endIndex] if startIndex != endIndex else os.getcwd()
+    return directory
+
 def CompleteWord(prefix, state):
     #state is simply a counter used to identify the number of options available as well as to identify the stopping condition
     global matches
     userInput = readline.get_line_buffer()
-    index = userInput.find(" ")
-    index += 1
-    isUserWritingArgument = bool(index)
-
-    prefix = userInput[index:] if isUserWritingArgument else prefix
+    startIndex = userInput.find(" ")
+    startIndex += 1
+    isUserWritingArgument = bool(startIndex)
     
     if prefix == '':
         return None
@@ -82,7 +86,8 @@ def CompleteWord(prefix, state):
     if state == 0:
         match isUserWritingArgument: 
             case True:
-                documentsInCWDList = os.listdir(os.getcwd()) 
+                directory = getDirectory(prefix, userInput, startIndex, isUserWritingArgument)
+                documentsInCWDList = os.listdir(directory) 
                 documentsInCWDList = list(set(documentsInCWDList))
                 matches = [document for document in documentsInCWDList if document.startswith(prefix)]
 
