@@ -105,7 +105,7 @@ def main():
      originalSTDERR = sys.stderr
      readline.set_completer(CompleteWord)
      readline.parse_and_bind("tab: complete")
-     #readline.set_completion_display_matches_hook(DisplayMatches)
+     readline.set_completion_display_matches_hook(DisplayMatches)
 
      while (True):
         sys.stdout.write("$ ")
