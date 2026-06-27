@@ -89,7 +89,7 @@ def CompleteWord(prefix, state):
         if command.startswith(prefix):
             matches.append(command)
     sorted(matches)
-    return matches[state] + " " if state < len(matches) else None
+    return matches[state] + " \x07" if state < len(matches) else None
     
 def DisplayMatches(substitution, matches, longest_match_len):
     print()
