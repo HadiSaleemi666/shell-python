@@ -2,7 +2,7 @@ import sys, os, subprocess, shlex, readline
 
 redirectionTypeList = ["1>", ">", "2>", ">>", "1>>", "2>>"]
 builtinCommands = ["echo", "type", "exit", "pwd", "cd", "complete"]
-registeredCompletionsList = []
+registeredCompletionsDictionary = {}
 matches = []
 
 def getAutoCompleteList():
@@ -179,14 +179,14 @@ def main():
         elif (command[0] == "complete"):
             match arguments[0]:
                 case "-p":
-                    for registeredCompletion in registeredCompletionsList:
-                        if arguments[1] in registeredCompletion:
-                            print(registeredCompletion)
+                    for registeredCompletion in registeredCompletionsDictionary.keys():
+                        if arguments[1] == registeredCompletion:
+                            print(f"complete -C '{registeredCompletionsDictionary[registeredCompletion]}' {arguments[1]}")
                             pass
                         else:
                             print(f"{command[0]}: {arguments[1]}: no completion specific")
                 case "-C":
-                    registeredCompletionsList.append(command[0] + " " + " ".join(arguments))
+                    registeredCompletionsDictionary[f"{arguments[2]}"] = arguments[1]
                 case _:
                     print("No valid second argument")
                 
