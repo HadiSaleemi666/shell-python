@@ -177,13 +177,17 @@ def main():
                 print(f"{command[0]}: {path}: No such file or directory")
 
         elif (command[0] == "complete"):
-            if arguments[0] == "-p" and arguments[1] in registeredCompletions:
-                #do something
-                pass
-            elif arguments[0] == "-p":
-                print(f"{command[0]}: {arguments[1]}: no completion specification")
-            else:
-                pass
+            match arguments[0]:
+                case "-p":
+                    if arguments[1] in registeredCompletions:
+                        #do something
+                        pass
+                    else:
+                        print(f"{command[0]}: {arguments[1]}: no completion specific")
+                case "-C":
+                    registeredCompletions.append(command[0] + " " + " ".join(arguments))
+                case _:
+                    print("No valid second argument")
                 
         else:
             found, path = getExecutablePath(command[0])
