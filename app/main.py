@@ -90,7 +90,7 @@ def CompleteWord(prefix, state):
             case True:
                 documentsInCWDList = os.listdir(directory) 
                 documentsInCWDList = list(set(documentsInCWDList))
-                matches = [document + os.path.sep for document in documentsInCWDList if os.path.isdir(document) and document.startswith(prefix)] if len(prefix) > 0 else [document for document in documentsInCWDList if os.path.isdir(document)] 
+                matches = [document + os.path.sep for document in documentsInCWDList if os.path.isdir(document) and document.startswith(prefix)] if len(prefix) > 0 else [document + os.path.sep for document in documentsInCWDList if os.path.isdir(document)] 
                 if len(matches) == 0:
                     matches = [document for document in documentsInCWDList if not os.path.isdir(document) and document.startswith(prefix)] if len(prefix) > 0 else documentsInCWDList
 
