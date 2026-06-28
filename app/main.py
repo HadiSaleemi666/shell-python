@@ -68,8 +68,9 @@ def getExecutablePath(executable):
 
 def getDirectory(prefix, userInput, startIndex, isUserWritingArgument):
     prefix = userInput[startIndex:] if isUserWritingArgument and len(prefix) == 0 else prefix
-    endIndex = userInput.find(prefix)
+    endIndex = userInput.find(prefix) if len(prefix) > 0 and prefix != userInput[startIndex:] else len(userInput)
     directory = os.getcwd() + os.path.sep + userInput[startIndex:endIndex] if startIndex != endIndex else os.getcwd()
+    directory = directory[:len(directory) - 1] if directory.endswith("/") else directory
     return directory
 
 def CompleteWord(prefix, state):
@@ -79,17 +80,17 @@ def CompleteWord(prefix, state):
     startIndex = userInput.find(" ")
     startIndex += 1
     isUserWritingArgument = bool(startIndex)
+    directory = getDirectory(prefix, userInput, startIndex, isUserWritingArgument)
     
-    if prefix == '':
+    if prefix == '' and not isUserWritingArgument:
         return None
     
     if state == 0:
         match isUserWritingArgument: 
             case True:
-                directory = getDirectory(prefix, userInput, startIndex, isUserWritingArgument)
                 documentsInCWDList = os.listdir(directory) 
                 documentsInCWDList = list(set(documentsInCWDList))
-                matches = [document for document in documentsInCWDList if document.startswith(prefix)]
+                matches = [document for document in documentsInCWDList if document.startswith(prefix)] if len(prefix) > 0 and len(documentsInCWDList) > 1 else documentsInCWDList
 
             case _:
                 commands = getAutoCompleteList()
