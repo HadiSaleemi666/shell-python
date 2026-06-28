@@ -68,7 +68,9 @@ def getExecutablePath(executable):
 
 def getDirectory(prefix, userInput, startIndex, isUserWritingArgument):
     prefix = userInput[startIndex:] if isUserWritingArgument and len(prefix) == 0 else prefix
-    endIndex = userInput.find(prefix) if len(prefix) > 0 and prefix != userInput[startIndex:] else len(userInput)
+    backSlashIndex = userInput.rfind(os.path.sep) 
+    backSlashIndex = backSlashIndex if backSlashIndex != -1 else 0
+    endIndex = userInput.rfind(prefix, backSlashIndex, len(userInput)) if len(prefix) > 0 and prefix != userInput[startIndex:] else len(userInput)
     directory = os.getcwd() + os.path.sep + userInput[startIndex:endIndex] if startIndex != endIndex and os.path.sep in userInput else os.getcwd()
     directory = directory[:len(directory) - 1] if directory.endswith("/") else directory
     return directory
@@ -76,7 +78,6 @@ def getDirectory(prefix, userInput, startIndex, isUserWritingArgument):
 def CompleteWord(prefix, state):
     #state is simply a counter used to identify the number of options available as well as to identify the stopping condition
     global matches
-    isDirectory = False
     userInput = readline.get_line_buffer()
     startIndex = userInput.find(" ")
     startIndex += 1
@@ -92,14 +93,13 @@ def CompleteWord(prefix, state):
                 documentsInCWDList = os.listdir(directory) 
                 documentsInCWDList = list(set(documentsInCWDList))
                 matches1 = [document + os.path.sep for document in documentsInCWDList if os.path.isdir(directory + os.path.sep + document) and document.startswith(prefix)] if len(prefix) > 0 else [document + os.path.sep for document in documentsInCWDList if os.path.isdir(directory + os.path.sep + document)] 
-                matches2 = [document + " " for document in documentsInCWDList if not os.path.isdir(document) and document.startswith(prefix)] if len(prefix) > 0 else [document + " " for document in documentsInCWDList if not os.path.isdir(document)]
+                matches2 = [document + " " for document in documentsInCWDList if not os.path.isdir(directory + os.path.sep + document) and document.startswith(prefix)] if len(prefix) > 0 else [document + " " for document in documentsInCWDList if not os.path.isdir(directory + os.path.sep + document)]
                 matches = matches1 + matches2
 
             case _:
                 commands = getAutoCompleteList()
                 commands = list(set(commands))
                 matches = [command + " " for command in commands if command.startswith(prefix)]
-
     return matches[state] if state < len(matches) else None
     
 def DisplayMatches(substitution, matches, longest_match_len):
