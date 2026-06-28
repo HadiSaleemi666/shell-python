@@ -1,7 +1,7 @@
 import sys, os, subprocess, shlex, readline
 
 redirectionTypeList = ["1>", ">", "2>", ">>", "1>>", "2>>"]
-builtinCommands = ["echo", "type", "exit", "pwd", "cd"]
+builtinCommands = ["echo", "type", "exit", "pwd", "cd", "complete"]
 matches = []
 
 def getAutoCompleteList():
