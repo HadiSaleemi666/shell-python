@@ -2,6 +2,7 @@ import sys, os, subprocess, shlex, readline
 
 redirectionTypeList = ["1>", ">", "2>", ">>", "1>>", "2>>"]
 builtinCommands = ["echo", "type", "exit", "pwd", "cd", "complete"]
+registeredCompletions = []
 matches = []
 
 def getAutoCompleteList():
@@ -174,6 +175,15 @@ def main():
                 os.chdir(path)
             else:
                 print(f"{command[0]}: {path}: No such file or directory")
+
+        elif (command[0] == "complete"):
+            if arguments[0] == "-p" and arguments[1] not in registeredCompletions:
+                #do something
+                pass
+            elif arguments[0] == "-p":
+                print(f"{command[0]}: {arguments[1]}: no completion specification")
+            else:
+                pass
                 
         else:
             found, path = getExecutablePath(command[0])
