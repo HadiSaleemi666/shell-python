@@ -177,7 +177,7 @@ def main():
                 print(f"{command[0]}: {path}: No such file or directory")
 
         elif (command[0] == "complete"):
-            if arguments[0] == "-p" and arguments[1] not in registeredCompletions:
+            if arguments[0] == "-p" and arguments[1] in registeredCompletions:
                 #do something
                 pass
             elif arguments[0] == "-p":
