@@ -91,9 +91,9 @@ def CompleteWord(prefix, state):
             case True:
                 documentsInCWDList = os.listdir(directory) 
                 documentsInCWDList = list(set(documentsInCWDList))
-                matches = [document + os.path.sep for document in documentsInCWDList if os.path.isdir(directory + os.path.sep + document) and document.startswith(prefix)] if len(prefix) > 0 else [document + os.path.sep for document in documentsInCWDList if os.path.isdir(directory + os.path.sep + document)] 
-                if len(matches) == 0:
-                    matches = [document + " " for document in documentsInCWDList if not os.path.isdir(document) and document.startswith(prefix)] if len(prefix) > 0 else [document + " " for document in documentsInCWDList]
+                matches1 = [document + os.path.sep for document in documentsInCWDList if os.path.isdir(directory + os.path.sep + document) and document.startswith(prefix)] if len(prefix) > 0 else [document + os.path.sep for document in documentsInCWDList if os.path.isdir(directory + os.path.sep + document)] 
+                matches2 = [document + " " for document in documentsInCWDList if not os.path.isdir(document) and document.startswith(prefix)] if len(prefix) > 0 else [document + " " for document in documentsInCWDList]
+                matches = matches1 + matches2
 
             case _:
                 commands = getAutoCompleteList()
