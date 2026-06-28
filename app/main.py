@@ -76,6 +76,7 @@ def getDirectory(prefix, userInput, startIndex, isUserWritingArgument):
 def CompleteWord(prefix, state):
     #state is simply a counter used to identify the number of options available as well as to identify the stopping condition
     global matches
+    isDirectory = False
     userInput = readline.get_line_buffer()
     startIndex = userInput.find(" ")
     startIndex += 1
@@ -92,14 +93,14 @@ def CompleteWord(prefix, state):
                 documentsInCWDList = list(set(documentsInCWDList))
                 matches = [document + os.path.sep for document in documentsInCWDList if os.path.isdir(document) and document.startswith(prefix)] if len(prefix) > 0 else [document + os.path.sep for document in documentsInCWDList if os.path.isdir(document)] 
                 if len(matches) == 0:
-                    matches = [document for document in documentsInCWDList if not os.path.isdir(document) and document.startswith(prefix)] if len(prefix) > 0 else documentsInCWDList
+                    matches = [document + " " for document in documentsInCWDList if not os.path.isdir(document) and document.startswith(prefix)] if len(prefix) > 0 else documentsInCWDList
 
             case _:
                 commands = getAutoCompleteList()
                 commands = list(set(commands))
-                matches = [command for command in commands if command.startswith(prefix)]
+                matches = [command + " " for command in commands if command.startswith(prefix)]
 
-    return matches[state] + " " if state < len(matches) else None
+    return matches[state] if state < len(matches) else None
     
 def DisplayMatches(substitution, matches, longest_match_len):
     print()
