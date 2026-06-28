@@ -179,12 +179,13 @@ def main():
         elif (command[0] == "complete"):
             match arguments[0]:
                 case "-p":
+                    found = False
                     for registeredCompletion in registeredCompletionsDictionary.keys():
                         if arguments[1] == registeredCompletion:
+                            found = True
                             print(f"complete -C '{registeredCompletionsDictionary[registeredCompletion]}' {arguments[1]}")
-                            pass
-                        else:
-                            print(f"{command[0]}: {arguments[1]}: no completion specific")
+                    if not found:
+                        print(f"complete: {arguments[1]}: no completion specification")
                 case "-C":
                     registeredCompletionsDictionary[f"{arguments[2]}"] = arguments[1]
                 case _:
