@@ -69,7 +69,7 @@ def getExecutablePath(executable):
 def getDirectory(prefix, userInput, startIndex, isUserWritingArgument):
     prefix = userInput[startIndex:] if isUserWritingArgument and len(prefix) == 0 else prefix
     endIndex = userInput.find(prefix) if len(prefix) > 0 and prefix != userInput[startIndex:] else len(userInput)
-    directory = os.getcwd() + os.path.sep + userInput[startIndex:endIndex] if startIndex != endIndex else os.getcwd()
+    directory = os.getcwd() + os.path.sep + userInput[startIndex:endIndex] if startIndex != endIndex and os.path.sep in userInput else os.getcwd()
     directory = directory[:len(directory) - 1] if directory.endswith("/") else directory
     return directory
 
