@@ -97,15 +97,13 @@ def CompleteWord(prefix, state):
     if prefix == '' and not isUserWritingArgument:
         return None
     
-    print("w")
-    
     if state == 0:
         if doesCommandHaveCompleter:
             completerOutputLocation = "completerSpecificationOutut.txt"
             fileObject = open(completerOutputLocation, 'w')
             sys.stdout = fileObject 
             subprocess.run([registeredCompletionsDictionary[command]])
-            matches = [line + "x" for line in fileObject.readlines()]
+            matches = [line + " " for line in fileObject.readlines()]
             fileObject.close()
             os.remove(completerOutputLocation)
         elif isUserWritingArgument:
