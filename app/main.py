@@ -1,9 +1,12 @@
 import sys, os, subprocess, shlex, readline
 
 redirectionTypeList = ["1>", ">", "2>", ">>", "1>>", "2>>"]
-builtinCommands = ["echo", "type", "exit", "pwd", "cd", "complete"]
+builtinCommands = ["echo", "type", "exit", "pwd", "cd", "complete", "jobs", "history", "declare"]
 registeredCompletionsDictionary = {}
 matches = []
+
+originalSTDOUT = sys.stdout
+originalSTDERR = sys.stderr
 
 def getAutoCompleteList():
     autoCompleteList = [command for command in builtinCommands]
@@ -82,6 +85,12 @@ def CompleteWord(prefix, state):
     userInput = readline.get_line_buffer()
     startIndex = userInput.find(" ")
     startIndex += 1
+    doesCommandHaveCompleter = False
+    command = userInput[:startIndex - 1] if startIndex != 0 and startIndex == len(userInput) else '?'
+    for key in registeredCompletionsDictionary.keys():
+        if key == command:
+            doesCommandHaveCompleter = True
+
     isUserWritingArgument = bool(startIndex)
     directory = getDirectory(prefix, userInput, startIndex, isUserWritingArgument)
     
@@ -89,18 +98,24 @@ def CompleteWord(prefix, state):
         return None
     
     if state == 0:
-        match isUserWritingArgument: 
-            case True:
-                documentsInCWDList = os.listdir(directory) 
-                documentsInCWDList = list(set(documentsInCWDList))
-                matches1 = [document + os.path.sep for document in documentsInCWDList if os.path.isdir(directory + os.path.sep + document) and document.startswith(prefix)] if len(prefix) > 0 else [document + os.path.sep for document in documentsInCWDList if os.path.isdir(directory + os.path.sep + document)] 
-                matches2 = [document + " " for document in documentsInCWDList if not os.path.isdir(directory + os.path.sep + document) and document.startswith(prefix)] if len(prefix) > 0 else [document + " " for document in documentsInCWDList if not os.path.isdir(directory + os.path.sep + document)]
-                matches = matches1 + matches2
-
-            case _:
-                commands = getAutoCompleteList()
-                commands = list(set(commands))
-                matches = [command + " " for command in commands if command.startswith(prefix)]
+        if doesCommandHaveCompleter:
+            completerOutputLocation = "completerSpecificationOutut.txt"
+            fileObject = open(completerOutputLocation, 'w')
+            sys.stdout = fileObject 
+            subprocess.run([registeredCompletionsDictionary[command]])
+            matches = [line for line in completerOutputLocation]
+            fileObject.close()
+        elif isUserWritingArgument:
+            documentsInCWDList = os.listdir(directory) 
+            documentsInCWDList = list(set(documentsInCWDList))
+            matches1 = [document + os.path.sep for document in documentsInCWDList if os.path.isdir(directory + os.path.sep + document) and document.startswith(prefix)] if len(prefix) > 0 else [document + os.path.sep for document in documentsInCWDList if os.path.isdir(directory + os.path.sep + document)] 
+            matches2 = [document + " " for document in documentsInCWDList if not os.path.isdir(directory + os.path.sep + document) and document.startswith(prefix)] if len(prefix) > 0 else [document + " " for document in documentsInCWDList if not os.path.isdir(directory + os.path.sep + document)]
+            matches = matches1 + matches2
+        else:
+            commands = getAutoCompleteList()
+            commands = list(set(commands))
+            matches = [command + " " for command in commands if command.startswith(prefix)]
+            
     return matches[state] if state < len(matches) else None
     
 def DisplayMatches(substitution, matches, longest_match_len):
@@ -112,8 +127,6 @@ def DisplayMatches(substitution, matches, longest_match_len):
 
 def main():
     # TODO: Uncomment the code below to pass the first stage
-     originalSTDOUT = sys.stdout
-     originalSTDERR = sys.stderr
      completerDelimiters = readline.get_completer_delims()
      readline.set_completer_delims(completerDelimiters.replace("-", ""))
      readline.set_completer(CompleteWord)
