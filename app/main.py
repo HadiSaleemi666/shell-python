@@ -101,7 +101,7 @@ def CompleteWord(prefix, state):
         if doesCommandHaveCompleter:
             completerOutputLocation = "completerSpecificationOutut.txt"
             subprocess.run(["touch", completerOutputLocation])
-            with open(completerOutputLocation, '+') as fileObject:
+            with open(completerOutputLocation, 'w+') as fileObject:
                 subprocess.run([registeredCompletionsDictionary[command]], stdout=fileObject)
                 matches = [line.strip("\n") + " " for line in fileObject.readlines()]
         elif isUserWritingArgument:
