@@ -103,7 +103,7 @@ def CompleteWord(prefix, state):
             fileObject = open(completerOutputLocation, 'w')
             sys.stdout = fileObject
             subprocess.run([registeredCompletionsDictionary[command]])
-            matches = [line + "x" for line in fileObject.readlines()]
+            #matches = [line + "x" for line in fileObject.readlines()]
             fileObject.close()
             sys.stdout = originalSTDOUT
             os.remove(completerOutputLocation)
