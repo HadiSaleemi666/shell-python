@@ -102,7 +102,7 @@ def CompleteWord(prefix, state):
             completerOutputLocation = "completerSpecificationOutut.txt"
             with open(completerOutputLocation, 'w+') as fileObject:
                 subprocess.run(["chmod", "+x", registeredCompletionsDictionary[command]], stdout=fileObject)
-                subprocess.run(["./" + registeredCompletionsDictionary[command]])
+                subprocess.run(["." + registeredCompletionsDictionary[command]])
                 matches = [line.strip("\n") + " " for line in fileObject.readlines()]
         elif isUserWritingArgument:
             documentsInCWDList = os.listdir(directory)
