@@ -101,10 +101,9 @@ def CompleteWord(prefix, state):
         if doesCommandHaveCompleter:
             completerOutputLocation = "completerSpecificationOutut.txt"
             subprocess.run(["touch", completerOutputLocation])
-            with open(completerOutputLocation, 'r') as fileObject:
+            with open(completerOutputLocation, '+') as fileObject:
                 subprocess.run([registeredCompletionsDictionary[command]], stdout=fileObject)
                 matches = [line.strip("\n") + " " for line in fileObject.readlines()]
-            sys.stdout = originalSTDOUT
         elif isUserWritingArgument:
             documentsInCWDList = os.listdir(directory)
             documentsInCWDList = list(set(documentsInCWDList))
@@ -132,6 +131,7 @@ def main():
      readline.set_completer(CompleteWord)
      readline.parse_and_bind("tab: complete")
      readline.set_completion_display_matches_hook(DisplayMatches)
+    
 
      while (True):
         sys.stdout.write("$ ")
