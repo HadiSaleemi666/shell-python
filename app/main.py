@@ -97,6 +97,8 @@ def CompleteWord(prefix, state):
     if prefix == '' and not isUserWritingArgument:
         return None
     
+    print("reached here")
+    
     if state == 0:
         if doesCommandHaveCompleter:
             completerOutputLocation = "completerSpecificationOutut.txt"
