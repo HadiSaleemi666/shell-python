@@ -106,7 +106,7 @@ def CompleteWord(prefix, state):
             matches = [line + " " for line in fileObject.readlines()]
             fileObject.close()
             sys.stdout = originalSTDOUT
-            print(matches)
+            print("wassup")
             os.remove(completerOutputLocation)
         elif isUserWritingArgument:
             documentsInCWDList = os.listdir(directory) 
