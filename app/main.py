@@ -97,7 +97,7 @@ def CompleteWord(prefix, state):
     if prefix == '' and not isUserWritingArgument:
         return None
     
-    print("reached here")
+    print("w")
     
     if state == 0:
         if doesCommandHaveCompleter:
@@ -105,7 +105,7 @@ def CompleteWord(prefix, state):
             fileObject = open(completerOutputLocation, 'w')
             sys.stdout = fileObject 
             subprocess.run([registeredCompletionsDictionary[command]])
-            matches = [line + " " for line in completerOutputLocation]
+            matches = [line + "x" for line in completerOutputLocation]
             print(matches)
             fileObject.close()
             os.remove(completerOutputLocation)
