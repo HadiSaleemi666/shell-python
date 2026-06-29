@@ -99,15 +99,14 @@ def CompleteWord(prefix, state):
 
     if state == 0:
         if doesCommandHaveCompleter:
-            # completerOutputLocation = "completerSpecificationOutut.txt"
-            # fileObject = open(completerOutputLocation, 'w')
-            # sys.stdout = fileObject
-            # subprocess.run([registeredCompletionsDictionary[command]])
-            # matches = [line + " " for line in fileObject.readlines()]
-            # fileObject.close()
-            # sys.stdout = originalSTDOUT
-            # os.remove(completerOutputLocation)
-            pass
+            completerOutputLocation = "completerSpecificationOutut.txt"
+            fileObject = open(completerOutputLocation, 'w')
+            sys.stdout = fileObject
+            subprocess.run([registeredCompletionsDictionary[command]])
+            matches = [line + "x" for line in fileObject.readlines()]
+            fileObject.close()
+            sys.stdout = originalSTDOUT
+            os.remove(completerOutputLocation)
         elif isUserWritingArgument:
             documentsInCWDList = os.listdir(directory)
             documentsInCWDList = list(set(documentsInCWDList))
