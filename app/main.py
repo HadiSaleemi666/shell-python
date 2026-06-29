@@ -102,14 +102,20 @@ def CompleteWord(prefix, state):
             pathToCompleter = ""
             completerOutputLocation = "completerSpecificationOutut.txt"
             pathToCompleter = str(registeredCompletionsDictionary[command])
-            lastBackSlashIndex = pathToCompleter.rfind("\\")
-            bashScript = pathToCompleter[lastBackSlashIndex:] if lastBackSlashIndex != len(pathToCompleter) and lastBackSlashIndex != -1 else ""
+            lastBackSlashIndex = pathToCompleter.rfind(os.path.sep)
+            bashScript = pathToCompleter[lastBackSlashIndex + 1:] if lastBackSlashIndex != len(pathToCompleter) and lastBackSlashIndex != -1 else ""
             pathToCompleter = pathToCompleter[:lastBackSlashIndex + 1] if lastBackSlashIndex != len(pathToCompleter) and lastBackSlashIndex != -1 else pathToCompleter
             os.chdir(pathToCompleter)
-            with open(completerOutputLocation, 'w+') as fileObject:
-                subprocess.run(["chmod +x " + bashScript])
-                subprocess.run(["./" + bashScript], stdout=fileObject)
-                matches = [line.strip("\n") + " " for line in fileObject.readlines()]
+            
+            with open(completerOutputLocation, 'w') as completerFileObject:
+                subprocess.run(["chmod", "+x", bashScript])
+                subprocess.run(["./" + bashScript], stdout=completerFileObject)
+
+            with open(completerOutputLocation, 'r') as completerFileObject:
+                matches = [line.strip("\n") + " " for line in completerFileObject.readlines()]
+            
+            os.remove(completerOutputLocation)
+
         elif isUserWritingArgument:
             documentsInCWDList = os.listdir(directory)
             documentsInCWDList = list(set(documentsInCWDList))
@@ -137,7 +143,6 @@ def main():
      readline.set_completer(CompleteWord)
      readline.parse_and_bind("tab: complete")
      readline.set_completion_display_matches_hook(DisplayMatches)
-    
 
      while (True):
         sys.stdout.write("$ ")
