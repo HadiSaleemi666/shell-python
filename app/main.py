@@ -103,7 +103,7 @@ def CompleteWord(prefix, state):
             fileObject = open(completerOutputLocation, 'w')
             sys.stdout = fileObject 
             subprocess.run([registeredCompletionsDictionary[command]])
-            matches = [line for line in completerOutputLocation]
+            matches = [line + " " for line in completerOutputLocation]
             fileObject.close()
         elif isUserWritingArgument:
             documentsInCWDList = os.listdir(directory) 
