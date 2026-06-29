@@ -106,6 +106,7 @@ def CompleteWord(prefix, state):
             matches = [line + " " for line in completerOutputLocation]
             print(matches)
             fileObject.close()
+            os.remove(completerOutputLocation)
         elif isUserWritingArgument:
             documentsInCWDList = os.listdir(directory) 
             documentsInCWDList = list(set(documentsInCWDList))
