@@ -99,9 +99,16 @@ def CompleteWord(prefix, state):
 
     if state == 0:
         if doesCommandHaveCompleter:
+            pathToCompleter = ""
             completerOutputLocation = "completerSpecificationOutut.txt"
+            pathToCompleter = str(registeredCompletionsDictionary[command])
+            lastBackSlashIndex = pathToCompleter.rfind("\\")
+            bashScript = pathToCompleter[lastBackSlashIndex:] if lastBackSlashIndex != len(pathToCompleter) and lastBackSlashIndex != -1 else ""
+            pathToCompleter = pathToCompleter[:lastBackSlashIndex + 1] if lastBackSlashIndex != len(pathToCompleter) and lastBackSlashIndex != -1 else pathToCompleter
+            os.chdir(pathToCompleter)
             with open(completerOutputLocation, 'w+') as fileObject:
-                subprocess.run(["python3", registeredCompletionsDictionary[command]], stdout=fileObject)
+                subprocess.run(["chmod +x " + bashScript])
+                subprocess.run(["./" + bashScript], stdout=fileObject)
                 matches = [line.strip("\n") + " " for line in fileObject.readlines()]
         elif isUserWritingArgument:
             documentsInCWDList = os.listdir(directory)
