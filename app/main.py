@@ -13,11 +13,11 @@ def getAutoCompleteList():
     system_path = os.environ.get('PATH')
     directories = system_path.split(os.pathsep)
     executableDirectoryList = []
-    for directory in directories: 
+    for directory in directories:
         if os.path.exists(directory):
             executableDirectoryList = os.listdir(directory)
             autoCompleteList += executableDirectoryList
-            
+
     return autoCompleteList
 
 
@@ -41,7 +41,7 @@ def RedirectOutput(argumentsList):
             print("Redirection specified but no location is provided.")
             isRedirectionUnsuccessful = True
             return isRedirectionUnsuccessful, indexOfArgumentsRemoval
-            
+
         match redirectionType:
             case "2>":
                 sys.stderr = open(redirectedLocation, 'w')
@@ -55,7 +55,7 @@ def RedirectOutput(argumentsList):
                 pass
     else:
         return isRedirectionUnsuccessful, indexOfArgumentsRemoval
-    
+
     return isRedirectionUnsuccessful, indexOfArgumentsRemoval
 
 def getExecutablePath(executable):
@@ -63,7 +63,7 @@ def getExecutablePath(executable):
     directories = system_path.split(os.pathsep)
     found = False
     path = ""
-    for directory in directories: 
+    for directory in directories:
         if os.path.exists(directory) and executable in os.listdir(directory) and os.access(f"{directory}{os.path.sep}{executable}", os.X_OK):
             found = True
             path = directory + os.path.sep + executable
@@ -72,7 +72,7 @@ def getExecutablePath(executable):
 
 def getDirectory(prefix, userInput, startIndex, isUserWritingArgument):
     prefix = userInput[startIndex:] if isUserWritingArgument and len(prefix) == 0 else prefix
-    backSlashIndex = userInput.rfind(os.path.sep) 
+    backSlashIndex = userInput.rfind(os.path.sep)
     backSlashIndex = backSlashIndex if backSlashIndex != -1 else 0
     endIndex = userInput.rfind(prefix, backSlashIndex, len(userInput)) if len(prefix) > 0 and prefix != userInput[startIndex:] else len(userInput)
     directory = os.getcwd() + os.path.sep + userInput[startIndex:endIndex] if startIndex != endIndex and os.path.sep in userInput else os.getcwd()
@@ -93,34 +93,34 @@ def CompleteWord(prefix, state):
 
     isUserWritingArgument = bool(startIndex)
     directory = getDirectory(prefix, userInput, startIndex, isUserWritingArgument)
-    
+
     if prefix == '' and not isUserWritingArgument:
         return None
-    
+
     if state == 0:
         if doesCommandHaveCompleter:
-            completerOutputLocation = "completerSpecificationOutut.txt"
-            fileObject = open(completerOutputLocation, 'w')
-            sys.stdout = fileObject 
-            subprocess.run([registeredCompletionsDictionary[command]])
-            matches = [line + " " for line in fileObject.readlines()]
-            fileObject.close()
-            sys.stdout = originalSTDOUT
-            print("wassup")
-            os.remove(completerOutputLocation)
+            # completerOutputLocation = "completerSpecificationOutut.txt"
+            # fileObject = open(completerOutputLocation, 'w')
+            # sys.stdout = fileObject
+            # subprocess.run([registeredCompletionsDictionary[command]])
+            # matches = [line + " " for line in fileObject.readlines()]
+            # fileObject.close()
+            # sys.stdout = originalSTDOUT
+            # os.remove(completerOutputLocation)
+            pass
         elif isUserWritingArgument:
-            documentsInCWDList = os.listdir(directory) 
+            documentsInCWDList = os.listdir(directory)
             documentsInCWDList = list(set(documentsInCWDList))
-            matches1 = [document + os.path.sep for document in documentsInCWDList if os.path.isdir(directory + os.path.sep + document) and document.startswith(prefix)] if len(prefix) > 0 else [document + os.path.sep for document in documentsInCWDList if os.path.isdir(directory + os.path.sep + document)] 
+            matches1 = [document + os.path.sep for document in documentsInCWDList if os.path.isdir(directory + os.path.sep + document) and document.startswith(prefix)] if len(prefix) > 0 else [document + os.path.sep for document in documentsInCWDList if os.path.isdir(directory + os.path.sep + document)]
             matches2 = [document + " " for document in documentsInCWDList if not os.path.isdir(directory + os.path.sep + document) and document.startswith(prefix)] if len(prefix) > 0 else [document + " " for document in documentsInCWDList if not os.path.isdir(directory + os.path.sep + document)]
             matches = matches1 + matches2
         else:
             commands = getAutoCompleteList()
             commands = list(set(commands))
             matches = [command + " " for command in commands if command.startswith(prefix)]
-            
+
     return matches[state] if state < len(matches) else None
-    
+
 def DisplayMatches(substitution, matches, longest_match_len):
     print()
     print("  ".join(sorted(matches)))
@@ -149,7 +149,7 @@ def main():
 
         if not parsedInput:
             continue
-   
+
         command = parsedInput[:1]
         arguments = parsedInput[1:]
         indexOfArgumentRemoval = -1
@@ -158,12 +158,12 @@ def main():
         for redirectionType in redirectionTypeList:
             if redirectionType in arguments:
                 isRedirectionUnsuccessful, indexOfArgumentRemoval = RedirectOutput(arguments)
-            
+
                 if (isRedirectionUnsuccessful):
                     continue
-                
+
                 arguments = arguments[:indexOfArgumentRemoval]
-        
+
         if (command[0] == "exit"):
             break
 
@@ -206,14 +206,14 @@ def main():
                     registeredCompletionsDictionary[f"{arguments[2]}"] = arguments[1]
                 case _:
                     print("No valid second argument")
-                
+
         else:
             found, path = getExecutablePath(command[0])
             if (found):
                 subprocess.run([command[0]] + arguments, executable=path, stdout=sys.stdout, stderr=sys.stderr)
             else:
                 print(f"{command[0]}: command not found")
-        
+
         if sys.stdout != originalSTDOUT:
             sys.stdout = originalSTDOUT
 
