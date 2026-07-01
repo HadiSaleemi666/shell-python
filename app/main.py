@@ -99,6 +99,10 @@ def CompleteWord(prefix, state):
 
     if state == 0:
         if commandHasCompleter:
+            myEnv = os.environ.copy()
+            myEnv['COMP_LINE'] = userInput
+            myEnv['COMP_POINT'] = len(userInput)
+
             pathToCompleter = ""
             completerOutputLocation = "completerSpecificationOutut.txt"
             userInput = userInput[startIndex:] if startIndex != 0 else ""
@@ -113,7 +117,7 @@ def CompleteWord(prefix, state):
             
             with open(completerOutputLocation, 'w') as completerFileObject:
                 subprocess.run(["chmod", "+x", bashScript])
-                subprocess.run([f"./{bashScript}", command, prefix, previousWord], stdout=completerFileObject)
+                subprocess.run([f"./{bashScript}", command, prefix, previousWord], stdout=completerFileObject, env=myEnv)
 
             with open(completerOutputLocation, 'r') as completerFileObject:
                 matches = [line.strip("\n") + " " for line in completerFileObject if line.startswith(prefix)] if prefix else [line.strip("\n") + " " for line in completerFileObject] 
