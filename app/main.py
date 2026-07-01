@@ -248,8 +248,8 @@ def main():
                 if not jobInBackground:
                     subprocess.run([command[0]] + arguments, executable=path, stdout=sys.stdout, stderr=sys.stderr)
                 else:
-                    subprocess.Popen([command[0]] + arguments, executable=path, stdout=sys.stdout, stderr=sys.stderr)
-                    print(f"[{jobID}] {os.getpid()}")
+                    process = subprocess.Popen([command[0]] + arguments, executable=path, stdout=sys.stdout, stderr=sys.stderr)
+                    print(f"[1] {process.pid}")
                     jobID += 1
             else:
                 print(f"{command[0]}: command not found")
