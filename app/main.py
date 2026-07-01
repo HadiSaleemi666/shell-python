@@ -101,7 +101,7 @@ def CompleteWord(prefix, state):
         if commandHasCompleter:
             myEnv = os.environ.copy()
             myEnv['COMP_LINE'] = userInput
-            myEnv['COMP_POINT'] = len(userInput)
+            myEnv['COMP_POINT'] = str(len(userInput))
 
             pathToCompleter = ""
             completerOutputLocation = "completerSpecificationOutut.txt"
