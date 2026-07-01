@@ -232,6 +232,8 @@ def main():
 
                 case _:
                     print("No valid second argument")
+        elif (command[0] == "jobs"):
+            pass
 
         else:
             found, path = getExecutablePath(command[0])

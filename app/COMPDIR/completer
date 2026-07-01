@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-if [[ $# -eq 3 ]]
-then
-printf "run\n"
-printf "stop\n"
-printf "remote\n"
-fi
