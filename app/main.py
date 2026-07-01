@@ -107,7 +107,7 @@ def CompleteWord(prefix, state):
             completerOutputLocation = "completerSpecificationOutut.txt"
             userInput = userInput[startIndex:] if startIndex != 0 else ""
             endIndex = userInput.find(" ")
-            previousWord = userInput[:endIndex] if endIndex != -1 else ""
+            previousWord = userInput[:endIndex] if endIndex != -1 else command
 
             pathToCompleter = str(registeredCompletionsDictionary[command])
             lastBackSlashIndex = pathToCompleter.rfind(os.path.sep)
@@ -120,7 +120,8 @@ def CompleteWord(prefix, state):
                 subprocess.run([f"./{bashScript}", command, prefix, previousWord], stdout=completerFileObject, env=myEnv)
 
             with open(completerOutputLocation, 'r') as completerFileObject:
-                matches = [line.strip("\n") + " " for line in completerFileObject if line.startswith(prefix)] if prefix else [line.strip("\n") + " " for line in completerFileObject] 
+                matches = [line.strip("\n") + " " for line in completerFileObject]
+                matches = matches
             
             os.remove(completerOutputLocation)
 
