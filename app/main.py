@@ -181,13 +181,13 @@ def main():
 
                 arguments = arguments[:indexOfArgumentRemoval]
 
-        if (command[0] == "exit"):
+        if (command[0] is "exit"):
             break
 
-        elif (command[0] == "echo"):
+        elif (command[0] is "echo"):
             print(' '.join(arguments) if len(arguments) > 0 else "")
 
-        elif (command[0] == "type"):
+        elif (command[0] is "type"):
             if (arguments[0] in builtinCommands):
                 print(f"{" ".join(arguments)} is a shell builtin")
             else:
@@ -197,19 +197,19 @@ def main():
                 else:
                     print(f"{" ".join(arguments)}: not found")
 
-        elif (command[0] == "pwd"):
+        elif (command[0] is "pwd"):
             print(os.getcwd())
 
-        elif (command[0] == "cd"):
+        elif (command[0] is "cd"):
             path = " ".join(arguments)
-            if (path == "~"):
+            if (path is "~"):
                 path = os.environ.get('HOME')
             if (os.path.exists(path)):
                 os.chdir(path)
             else:
                 print(f"{command[0]}: {path}: No such file or directory")
 
-        elif (command[0] == "complete"):
+        elif (command[0] is "complete"):
             match arguments[0]:
                 case "-p":
                     found = False
@@ -220,7 +220,16 @@ def main():
                     if not found:
                         print(f"complete: {arguments[1]}: no completion specification")
                 case "-C":
-                    registeredCompletionsDictionary[f"{arguments[2]}"] = arguments[1]
+                    if len(arguments) == 3:
+                        registeredCompletionsDictionary[f"{arguments[2]}"] = arguments[1]
+                    else:
+                        print("Incorrect number of arguments passed.")
+                case "-r":
+                    if len(arguments) == 2:
+                        registeredCompletionsDictionary.pop(f"{arguments[1]}", "Not Found")
+                    else:
+                        print("Incorrect number of arguments")
+
                 case _:
                     print("No valid second argument")
 
