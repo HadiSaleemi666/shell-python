@@ -116,7 +116,7 @@ def CompleteWord(prefix, state):
                 subprocess.run([f"./{bashScript}", command, prefix, previousWord], stdout=completerFileObject)
 
             with open(completerOutputLocation, 'r') as completerFileObject:
-                matches = [line.strip("\n") + " " for line in completerFileObject if line.startswith(prefix)] if prefix else [line.strip("\n") for line in completerFileObject] 
+                matches = [line.strip("\n") + " " for line in completerFileObject if line.startswith(prefix)] if prefix else [line.strip("\n") + " " for line in completerFileObject] 
             
             os.remove(completerOutputLocation)
 
