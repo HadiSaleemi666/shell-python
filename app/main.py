@@ -85,11 +85,11 @@ def CompleteWord(prefix, state):
     userInput = readline.get_line_buffer()
     startIndex = userInput.find(" ")
     startIndex += 1
-    doesCommandHaveCompleter = False
-    command = userInput[:startIndex - 1] if startIndex != 0 and startIndex == len(userInput) else '?'
+    commandHasCompleter = False
+    command = userInput[:startIndex - 1] if startIndex != 0 and startIndex != len(userInput) else '?'
     for key in registeredCompletionsDictionary:
         if key == command:
-            doesCommandHaveCompleter = True
+            commandHasCompleter = True
 
     isUserWritingArgument = bool(startIndex)
     directory = getDirectory(prefix, userInput, startIndex, isUserWritingArgument)
@@ -98,11 +98,12 @@ def CompleteWord(prefix, state):
         return None
 
     if state == 0:
-        if doesCommandHaveCompleter:
+        if commandHasCompleter:
             pathToCompleter = ""
             completerOutputLocation = "completerSpecificationOutut.txt"
-            endIndex = userInput[startIndex:].find(" ")
-            previousWord = userInput[startIndex:endIndex] if endIndex > startIndex else ""
+            userInput = userInput[startIndex:]
+            endIndex = userInput.find(" ")
+            previousWord = userInput[:endIndex] if endIndex > startIndex else ""
 
             pathToCompleter = str(registeredCompletionsDictionary[command])
             lastBackSlashIndex = pathToCompleter.rfind(os.path.sep)
@@ -115,7 +116,7 @@ def CompleteWord(prefix, state):
                 subprocess.run([f"./{bashScript}", command, prefix, previousWord], stdout=completerFileObject)
 
             with open(completerOutputLocation, 'r') as completerFileObject:
-                matches = [line.strip("\n") + " " for line in completerFileObject.readlines()]
+                matches = [line.strip("\n") + " " for line in completerFileObject.readlines() if line.startswith(prefix)]
             
             os.remove(completerOutputLocation)
 
