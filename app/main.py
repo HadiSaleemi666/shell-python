@@ -86,7 +86,7 @@ def CompleteWord(prefix, state):
     startIndex = userInput.find(" ")
     startIndex += 1
     commandHasCompleter = False
-    command = userInput[:startIndex - 1] if startIndex != 0 and startIndex != len(userInput) else '?'
+    command = userInput[:startIndex - 1] if startIndex != 0 and startIndex <= len(userInput) else '?'
     for key in registeredCompletionsDictionary:
         if key == command:
             commandHasCompleter = True
@@ -101,9 +101,9 @@ def CompleteWord(prefix, state):
         if commandHasCompleter:
             pathToCompleter = ""
             completerOutputLocation = "completerSpecificationOutut.txt"
-            userInput = userInput[startIndex:]
+            userInput = userInput[startIndex:] if startIndex != 0 else ""
             endIndex = userInput.find(" ")
-            previousWord = userInput[:endIndex] if endIndex > startIndex else ""
+            previousWord = userInput[:endIndex] if endIndex != -1 else ""
 
             pathToCompleter = str(registeredCompletionsDictionary[command])
             lastBackSlashIndex = pathToCompleter.rfind(os.path.sep)
