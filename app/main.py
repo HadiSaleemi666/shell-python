@@ -181,13 +181,13 @@ def main():
 
                 arguments = arguments[:indexOfArgumentRemoval]
 
-        if (command[0] is "exit"):
+        if (command[0] == "exit"):
             break
 
-        elif (command[0] is "echo"):
+        elif (command[0] == "echo"):
             print(' '.join(arguments) if len(arguments) > 0 else "")
 
-        elif (command[0] is "type"):
+        elif (command[0] == "type"):
             if (arguments[0] in builtinCommands):
                 print(f"{" ".join(arguments)} is a shell builtin")
             else:
@@ -197,19 +197,19 @@ def main():
                 else:
                     print(f"{" ".join(arguments)}: not found")
 
-        elif (command[0] is "pwd"):
+        elif (command[0] == "pwd"):
             print(os.getcwd())
 
-        elif (command[0] is "cd"):
+        elif (command[0] == "cd"):
             path = " ".join(arguments)
-            if (path is "~"):
+            if (path == "~"):
                 path = os.environ.get('HOME')
             if (os.path.exists(path)):
                 os.chdir(path)
             else:
                 print(f"{command[0]}: {path}: No such file or directory")
 
-        elif (command[0] is "complete"):
+        elif (command[0] == "complete"):
             match arguments[0]:
                 case "-p":
                     found = False
