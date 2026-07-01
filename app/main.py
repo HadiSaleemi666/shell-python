@@ -152,6 +152,8 @@ def main():
      readline.set_completer(CompleteWord)
      readline.parse_and_bind("tab: complete")
      readline.set_completion_display_matches_hook(DisplayMatches)
+     jobID = 1
+     jobInBackground = False
 
      while (True):
         sys.stdout.write("$ ")
@@ -170,6 +172,11 @@ def main():
         command = parsedInput[:1]
         arguments = parsedInput[1:]
         indexOfArgumentRemoval = -1
+
+        #check if command should run in background
+        if "&" in arguments:
+            jobInBackground = True
+            arguments.pop()
 
         #redirect output
         for redirectionType in redirectionTypeList:
@@ -237,8 +244,13 @@ def main():
 
         else:
             found, path = getExecutablePath(command[0])
-            if (found):
-                subprocess.run([command[0]] + arguments, executable=path, stdout=sys.stdout, stderr=sys.stderr)
+            if found:
+                if not jobInBackground:
+                    subprocess.run([command[0]] + arguments, executable=path, stdout=sys.stdout, stderr=sys.stderr)
+                else:
+                    subprocess.Popen([command[0]] + arguments, executable=path, stdout=sys.stdout, stderr=sys.stderr)
+                    print(f"[{jobID}] {os.getpid()}")
+                    jobID += 1
             else:
                 print(f"{command[0]}: command not found")
 
