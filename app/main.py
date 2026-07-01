@@ -87,7 +87,7 @@ def CompleteWord(prefix, state):
     startIndex += 1
     doesCommandHaveCompleter = False
     command = userInput[:startIndex - 1] if startIndex != 0 and startIndex == len(userInput) else '?'
-    for key in registeredCompletionsDictionary.keys():
+    for key in registeredCompletionsDictionary:
         if key == command:
             doesCommandHaveCompleter = True
 
@@ -101,6 +101,9 @@ def CompleteWord(prefix, state):
         if doesCommandHaveCompleter:
             pathToCompleter = ""
             completerOutputLocation = "completerSpecificationOutut.txt"
+            endIndex = userInput[startIndex:].find(" ")
+            previousWord = userInput[startIndex:endIndex] if endIndex > startIndex else ""
+
             pathToCompleter = str(registeredCompletionsDictionary[command])
             lastBackSlashIndex = pathToCompleter.rfind(os.path.sep)
             bashScript = pathToCompleter[lastBackSlashIndex + 1:] if lastBackSlashIndex != len(pathToCompleter) and lastBackSlashIndex != -1 else ""
@@ -109,7 +112,7 @@ def CompleteWord(prefix, state):
             
             with open(completerOutputLocation, 'w') as completerFileObject:
                 subprocess.run(["chmod", "+x", bashScript])
-                subprocess.run(["./" + bashScript], stdout=completerFileObject)
+                subprocess.run([f"./{bashScript}", command, prefix, previousWord], stdout=completerFileObject)
 
             with open(completerOutputLocation, 'r') as completerFileObject:
                 matches = [line.strip("\n") + " " for line in completerFileObject.readlines()]
